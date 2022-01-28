@@ -51,7 +51,7 @@ export default function App() {
           results.map((item: any) => ({ ...item, printerType: selectedValue }))
         );
       } catch (err) {
-        console.warn(err);
+        console.log(err);
       } finally {
         setLoading(false);
       }
@@ -72,8 +72,8 @@ export default function App() {
             break;
           case "net":
             await NetPrinter.connectPrinter(
-              "192.168.1.100",
-              9100
+              selectedPrinter?.host || "",
+              parseInt(selectedPrinter?.port) || 9100
             );
             break;
           case "usb":
@@ -97,8 +97,8 @@ export default function App() {
     try {
       // [options valueForKey:@"imageWidth"];
       const Printer = printerList[selectedValue];
-      await Printer.printImage("https://howmuch-pk.s3.ap-southeast-1.amazonaws.com/spree/stores/1380/squared_large/logo-for-grocery-store-vector-21609822.jpeg", {imageWidth: 100, paddingX: 300});
-      await Printer.printText("<C>sample text bjhbfhjbdjhfbjfhdvfjdvhjdbfjbjhfdbghjfbgbhjfdgbjfdhbgbjhdfgbjhdfbghjdbghdbjgdhhbgghdjfhbgjdfbgbhjd</C>\n");
+      await Printer.printImage("https://howmuch-pk.s3.ap-southeast-1.amazonaws.com/spree/stores/1380/squared_large/logo-for-grocery-store-vector-21609822.jpeg", {imageWidth: 100, paddingX: 10, paddingY: 10, printerWidthType: '58'});
+      await Printer.printText("<C>sample text \x0A\x0A\x0A\x0A\x0A\x1B\x69</C>\n");
     } catch (err) {
       console.warn(err);
     }
