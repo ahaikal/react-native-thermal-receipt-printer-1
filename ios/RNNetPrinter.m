@@ -13,6 +13,7 @@
 #include <arpa/inet.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <React/RCTConvert.h>
 
 NSString *const EVENT_SCANNER_RESOLVED = @"scannerResolved";
 NSString *const EVENT_SCANNER_RUNNING = @"scannerRunning";
@@ -170,26 +171,24 @@ RCT_EXPORT_METHOD(printRawData:(NSString *)text
     }
 }
 
-RCT_EXPORT_METHOD(printImageData:(NSString *)imgUrl
+RCT_EXPORT_METHOD(printImageData:(NSString *)img
                   printerOptions:(NSDictionary *)options
                   fail:(RCTResponseSenderBlock)errorCallback) {
     @try {
-        
         !connected_ip ? [NSException raise:@"Invalid connection" format:@"Can't connect to printer"] : nil;
-        NSURL* url = [NSURL URLWithString:imgUrl];
-        NSData* imageData = [NSData dataWithContentsOfURL:url];
-        
+        UIImage * imm;
+        imm = [RCTConvert UIImage:img];
+
         NSString* printerWidthType = [options valueForKey:@"printerWidthType"];
-        
         NSInteger printerWidth = 576;
         
         if(printerWidthType != nil && [printerWidthType isEqualToString:@"58"]) {
             printerWidth = 384;
         }
         
-        if(imageData != nil){
-            UIImage* image = [UIImage imageWithData:imageData];
-            UIImage* printImage = [self getPrintImage:image printerOptions:options];
+        if(imm != nil){
+            // UIImage* image = [UIImage imageWithData:imageData];
+            UIImage* printImage = [self getPrintImage:imm printerOptions:options];
             
             [[PrinterSDK defaultPrinterSDK] setPrintWidth:printerWidth];
             [[PrinterSDK defaultPrinterSDK] printImage:printImage ];

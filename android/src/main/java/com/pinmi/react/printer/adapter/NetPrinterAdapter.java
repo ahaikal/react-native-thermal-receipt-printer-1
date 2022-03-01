@@ -270,8 +270,10 @@ public class NetPrinterAdapter implements PrinterAdapter {
     }
 
     @Override
-    public void printImageData(final String imageUrl, Callback errorCallback) {
-        final Bitmap bitmapImage = getBitmapFromURL(imageUrl);
+    public void printImageData(final String imageBase64, Callback errorCallback) {
+
+        byte[] decodedString = Base64.decode(imageBase64, Base64.DEFAULT);
+        Bitmap bitmapImage = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
         if (bitmapImage == null) {
             errorCallback.invoke("image not found");
