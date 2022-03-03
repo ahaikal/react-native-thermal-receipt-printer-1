@@ -16,6 +16,7 @@ import {
   INetPrinter,
 } from "react-native-thermal-receipt-printer";
 import Loader from "./Loader";
+import { base64Image } from './base64Image';
 
 const printerList: Record<string, any> = {
   ble: BLEPrinter,
@@ -31,7 +32,7 @@ interface SelectedPrinter
 export default function App() {
   const [selectedValue, setSelectedValue] = React.useState<
     keyof typeof printerList
-  >("ble");
+  >("net");
   const [devices, setDevices] = React.useState([]);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [selectedPrinter, setSelectedPrinter] = React.useState<SelectedPrinter>(
@@ -42,10 +43,11 @@ export default function App() {
     const getListDevices = async () => {
       const Printer = printerList[selectedValue];
       // get list device for net printers is support scanning in local ip but not recommended
+      await Printer.init();
       if (selectedValue === "net") return;
       try {
         setLoading(true);
-        await Printer.init();
+
         const results = await Printer.getDeviceList();
         setDevices(
           results.map((item: any) => ({ ...item, printerType: selectedValue }))
@@ -97,8 +99,8 @@ export default function App() {
     try {
       // [options valueForKey:@"imageWidth"];
       const Printer = printerList[selectedValue];
-      await Printer.printImage("https://howmuch-pk.s3.ap-southeast-1.amazonaws.com/spree/stores/1380/squared_large/logo-for-grocery-store-vector-21609822.jpeg", {imageWidth: 100, paddingX: 10, paddingY: 10, printerWidthType: '58'});
-      await Printer.printText("<C>sample text \x0A\x0A\x0A\x0A\x0A\x1B\x69</C>\n");
+      await Printer.printImage(base64Image.replace(/\r?\n|\r/g, " "), {imageWidth: 384, paddingX: 0, paddingY: 0, printerWidthType: '58'});
+      await Printer.printText("<C>this is a sample text \x0A\x0A\x0A\x0A\x0A\x1B\x69</C>\n");
     } catch (err) {
       console.warn(err);
     }
@@ -195,6 +197,7 @@ const styles = StyleSheet.create({
   },
   section: {
     flex: 1,
+    marginBottom: 50,
   },
   rowDirection: {
     flexDirection: "row",

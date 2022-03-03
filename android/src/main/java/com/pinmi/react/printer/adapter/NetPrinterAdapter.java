@@ -7,6 +7,9 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.util.Base64;
 import android.util.Log;
+import android.graphics.BitmapFactory;
+import android.content.res.AssetManager;
+import androidx.annotation.RequiresApi;
 
 import com.facebook.common.internal.ImmutableMap;
 import com.google.zxing.BarcodeFormat;
@@ -37,20 +40,15 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import android.graphics.BitmapFactory;
-
-import androidx.annotation.RequiresApi;
-
 /**
  * Created by xiesubin on 2017/9/22.
  */
 
 public class NetPrinterAdapter implements PrinterAdapter {
     private static NetPrinterAdapter mInstance;
-    private ReactApplicationContext mContext;
+    private static ReactApplicationContext mContext;
     private String LOG_TAG = "RNNetPrinter";
     private NetPrinterDevice mNetDevice;
-
     // {TODO- support other ports later}
     // private int[] PRINTER_ON_PORTS = {515, 3396, 9100, 9303};
 
@@ -252,15 +250,21 @@ public class NetPrinterAdapter implements PrinterAdapter {
 
     public static Bitmap getBitmapFromURL(String src) {
         try {
-            URL url = new URL(src);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            AssetManager assetManager = mContext.getAssets();
+            InputStream inputStream = assetManager.open(src);
+            final Bitmap myBitmap = BitmapFactory.decodeStream(inputStream);
+            inputStream.close();
 
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            myBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+
+            // URL url = new URL(src);
+            // HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            // connection.setDoInput(true);
+            // connection.connect();
+            // InputStream input = connection.getInputStream();
+            // Bitmap myBitmap = BitmapFactory.decodeStream(input);
+
+            // ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            // myBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
 
             return myBitmap;
         } catch (IOException e) {
@@ -270,8 +274,10 @@ public class NetPrinterAdapter implements PrinterAdapter {
     }
 
     @Override
-    public void printImageData(final String imageUrl, Callback errorCallback) {
-        final Bitmap bitmapImage = getBitmapFromURL(imageUrl);
+    public void printImageData(final String base64, Callback errorCallback) {
+
+        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
+        Bitmap bitmapImage = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
         if (bitmapImage == null) {
             errorCallback.invoke("image not found");
@@ -298,8 +304,8 @@ public class NetPrinterAdapter implements PrinterAdapter {
                 // the printer will resume to normal text printing
                 printerOutputStream.write(SELECT_BIT_IMAGE_MODE);
                 // Set nL and nH based on the width of the image
-                printerOutputStream.write(
-                        new byte[] { (byte) (0x00ff & pixels[y].length), (byte) ((0xff00 & pixels[y].length) >> 8) });
+                printerOutputStream.write(new byte[]{(byte)(0x00ff & pixels[y].length)
+                        , (byte)((0xff00 & pixels[y].length) >> 8)});
                 for (int x = 0; x < pixels[y].length; x++) {
                     // for each stripe, recollect 3 bytes (3 bytes = 24 bits)
                     printerOutputStream.write(recollectSlice(y, x, pixels));
@@ -393,9 +399,9 @@ public class NetPrinterAdapter implements PrinterAdapter {
         return null;
     }
 
-    public static int[][] getPixelsSlow(Bitmap image2) {
+    public static int[][] getPixelsSlow(Bitmap image) {
 
-        Bitmap image = resizeTheImageForPrinting(image2);
+        // Bitmap image = resizeTheImageForPrinting(image2);
 
         int width = image.getWidth();
         int height = image.getHeight();
@@ -442,20 +448,12 @@ public class NetPrinterAdapter implements PrinterAdapter {
         return luminance < threshold;
     }
 
-    public static Bitmap resizeTheImageForPrinting(Bitmap image) {
-        // making logo size 150 or less pixels
-        int width = image.getWidth();
-        int height = image.getHeight();
-        if (width > 200 || height > 200) {
-            if (width > height) {
-                float decreaseSizeBy = (200.0f / width);
-                return getBitmapResized(image, decreaseSizeBy);
-            } else {
-                float decreaseSizeBy = (200.0f / height);
-                return getBitmapResized(image, decreaseSizeBy);
-            }
-        }
-        return image;
+    public static Bitmap resizeTheImageForPrinting(Bitmap bitmap) {
+        float aspectRatio = bitmap.getWidth() / (float) bitmap.getHeight();
+        int newHeight = Math.round(bitmap.getWidth() / aspectRatio);
+        bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), newHeight, false);
+
+        return bitmap;
     }
 
     public static int getRGB(Bitmap bmpOriginal, int col, int row) {
