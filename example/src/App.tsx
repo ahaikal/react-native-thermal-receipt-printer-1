@@ -100,7 +100,7 @@ export default function App() {
       // [options valueForKey:@"imageWidth"];
       const Printer = printerList[selectedValue];
       await Printer.printImage(base64Image.replace(/\r?\n|\r/g, " "), {imageWidth: 384, paddingX: 0, paddingY: 0, printerWidthType: '58'});
-      await Printer.printText("<C>this is a sample text \x0A\x0A\x0A\x0A\x0A\x1B\x69</C>\n");
+      await Printer.printText("\x0A\x0A\x0A\x0A\x0A\x1B\x69");
     } catch (err) {
       console.warn(err);
     }
