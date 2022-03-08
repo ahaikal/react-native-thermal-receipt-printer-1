@@ -85,6 +85,12 @@ export var USBPrinter = {
             return console.warn(error);
         });
     },
+    printRawData: function (text, opts) {
+        if (opts === void 0) { opts = {}; }
+        return RNUSBPrinter.printRawData(text, opts, function (error) {
+            return console.warn(error);
+        });
+    },
     printBill: function (text, opts) {
         if (opts === void 0) { opts = {}; }
         return RNUSBPrinter.printRawData(billTo64Buffer(text, opts), function (error) {
@@ -138,6 +144,12 @@ export var BLEPrinter = {
             });
         }
     },
+    printRawData: function (text, opts) {
+        if (opts === void 0) { opts = {}; }
+        return RNUSBPrinter.printRawData(text, opts, function (error) {
+            return console.warn(error);
+        });
+    },
     printBill: function (text, opts) {
         if (opts === void 0) { opts = {}; }
         if (Platform.OS === "ios") {
@@ -184,6 +196,12 @@ export var NetPrinter = {
                 return console.warn(error);
             });
         }
+    },
+    printRawData: function (text, opts) {
+        if (opts === void 0) { opts = {}; }
+        return RNUSBPrinter.printRawData(text, opts, function (error) {
+            return console.warn(error);
+        });
     },
     printBill: function (text, opts) {
         if (opts === void 0) { opts = {}; }
