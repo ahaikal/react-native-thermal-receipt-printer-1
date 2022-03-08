@@ -247,7 +247,7 @@ RCT_EXPORT_METHOD(printImageData:(NSString *)base64
     CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
     CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
     CGContextFillRect(context, CGRectMake(0, 0, width, height));
-    CGFloat originX = (width - image.size.width)/2;
+    CGFloat originX = 0;
     CGFloat originY = (height -  image.size.height)/2;
     CGImageRef immageRef = image.CGImage;
     CGContextDrawImage(context, CGRectMake(originX, originY, image.size.width, image.size.height), immageRef);
