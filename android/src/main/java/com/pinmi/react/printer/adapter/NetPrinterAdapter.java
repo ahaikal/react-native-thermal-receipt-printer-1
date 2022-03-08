@@ -1,4 +1,5 @@
 package com.pinmi.react.printer.adapter;
+import com.pinmi.react.printer.helpers.EscPosHelper;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -283,6 +284,8 @@ public class NetPrinterAdapter implements PrinterAdapter {
             errorCallback.invoke("image not found");
             return;
         }
+        int printingWidth = bitmapImage.getWidth();
+        Bitmap image = EscPosHelper.resizeImage(bitmapImage, printingWidth - 100);
 
         if (this.mSocket == null) {
             errorCallback.invoke("bluetooth connection is not built, may be you forgot to connectPrinter");
@@ -292,7 +295,7 @@ public class NetPrinterAdapter implements PrinterAdapter {
         final Socket socket = this.mSocket;
 
         try {
-            int[][] pixels = getPixelsSlow(bitmapImage);
+            int[][] pixels = getPixelsSlow(image);
 
             OutputStream printerOutputStream = socket.getOutputStream();
 
