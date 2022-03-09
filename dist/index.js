@@ -36,11 +36,12 @@ var billTo64Buffer = function (text, opts) {
     var buffer = EPToolkit.exchange_text(text, options);
     return buffer.toString("base64");
 };
-var textPreprocessingIOS = function (text, isCut) {
-    var options = {
-        beep: true,
-        cut: isCut,
+var textPreprocessingIOS = function (text, opts) {
+    var defaultOptions = {
+        beep: false,
+        cut: false,
     };
+    var options = __assign(__assign({}, defaultOptions), opts);
     return {
         text: text
             .replace(/<\/?CB>/g, "")
@@ -135,7 +136,7 @@ export var BLEPrinter = {
     printText: function (text, opts) {
         if (opts === void 0) { opts = {}; }
         if (Platform.OS === "ios") {
-            var processedText = textPreprocessingIOS(text, false);
+            var processedText = textPreprocessingIOS(text, opts);
             RNBLEPrinter.printRawData(processedText.text, processedText.opts, function (error) { return console.warn(error); });
         }
         else {
@@ -153,7 +154,7 @@ export var BLEPrinter = {
     printBill: function (text, opts) {
         if (opts === void 0) { opts = {}; }
         if (Platform.OS === "ios") {
-            var processedText = textPreprocessingIOS(text, true);
+            var processedText = textPreprocessingIOS(text, opts);
             RNBLEPrinter.printRawData(processedText.text, processedText.opts, function (error) { return console.warn(error); });
         }
         else {
