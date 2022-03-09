@@ -189,7 +189,7 @@ export var NetPrinter = {
     printText: function (text, opts) {
         if (opts === void 0) { opts = {}; }
         if (Platform.OS === "ios") {
-            var processedText = textPreprocessingIOS(text, false);
+            var processedText = textPreprocessingIOS(text, opts);
             RNNetPrinter.printRawData(processedText.text, processedText.opts, function (error) { return console.warn(error); });
         }
         else {
@@ -207,7 +207,7 @@ export var NetPrinter = {
     printBill: function (text, opts) {
         if (opts === void 0) { opts = {}; }
         if (Platform.OS === "ios") {
-            var processedText = textPreprocessingIOS(text, true);
+            var processedText = textPreprocessingIOS(text, opts);
             RNNetPrinter.printRawData(processedText.text, processedText.opts, function (error) { return console.warn(error); });
         }
         else {
