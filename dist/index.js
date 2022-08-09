@@ -200,7 +200,7 @@ export var NetPrinter = {
     },
     printRawData: function (text, opts) {
         if (opts === void 0) { opts = {}; }
-        return RNUSBPrinter.printRawData(text, opts, function (error) {
+        return RNNetPrinter.printRawData(text, opts, function (error) {
             return console.warn(error);
         });
     },
