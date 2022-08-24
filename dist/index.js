@@ -200,9 +200,14 @@ export var NetPrinter = {
     },
     printRawData: function (text, opts) {
         if (opts === void 0) { opts = {}; }
-        return RNNetPrinter.printRawData(text, function (error) {
-            return console.warn(error);
-        });
+        if (Platform.OS === "ios") {
+            RNNetPrinter.printRawData(text, opts, function (error) { return console.warn(error); });
+        }
+        else {
+            RNNetPrinter.printRawData(text, function (error) {
+                return console.warn(error);
+            });
+        }
     },
     printBill: function (text, opts) {
         if (opts === void 0) { opts = {}; }
