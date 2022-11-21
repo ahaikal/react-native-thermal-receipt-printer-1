@@ -38,6 +38,7 @@ export declare const BLEPrinter: {
     printText: (text: string, opts?: PrinterOptions) => void;
     printRawData: (text: string, opts?: PrinterOptions) => void;
     printBill: (text: string, opts?: PrinterOptions) => void;
+    printImage: (imgUrl: string, opts?: {}) => void;
     printQrCode: (qrCode: string, opts?: {}) => void;
 };
 export declare const NetPrinter: {
