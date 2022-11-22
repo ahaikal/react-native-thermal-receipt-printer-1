@@ -1,5 +1,5 @@
 package com.pinmi.react.printer.adapter;
-
+import com.pinmi.react.printer.helpers.EscPosHelper;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -23,13 +23,10 @@ import java.util.Set;
 import java.util.UUID;
 
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.wifi.WifiManager;
 import android.os.Build;
-import android.util.Base64;
-import android.util.Log;
 
 import com.facebook.common.internal.ImmutableMap;
 import com.google.zxing.BarcodeFormat;
@@ -262,14 +259,18 @@ public class BLEPrinterAdapter implements PrinterAdapter{
     }
 
     @Override
-    public void printImageData(String imageUrl, Callback errorCallback) {
+    public void printImageData(String base64, Callback errorCallback) {
 
-        final Bitmap bitmapImage = getBitmapFromURL(imageUrl);
+        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
+        Bitmap bitmapImage = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
         if (bitmapImage == null) {
             errorCallback.invoke("image not found");
             return;
         }
+        int printingWidth = bitmapImage.getWidth();
+        Bitmap image = EscPosHelper.resizeImage(bitmapImage, printingWidth - 100);
+
         if(this.mBluetoothSocket == null){
             errorCallback.invoke("bluetooth connection is not built, may be you forgot to connectPrinter");
             return;
@@ -387,9 +388,9 @@ public class BLEPrinterAdapter implements PrinterAdapter{
         return null;
     }
 
-    public static int[][] getPixelsSlow(Bitmap image2) {
+    public static int[][] getPixelsSlow(Bitmap image) {
 
-        Bitmap image = resizeTheImageForPrinting(image2);
+        // Bitmap image = resizeTheImageForPrinting(image2);
 
         int width = image.getWidth();
         int height = image.getHeight();
@@ -436,20 +437,12 @@ public class BLEPrinterAdapter implements PrinterAdapter{
         return luminance < threshold;
     }
 
-    public static Bitmap resizeTheImageForPrinting(Bitmap image) {
-        // making logo size 150 or less pixels
-        int width = image.getWidth();
-        int height = image.getHeight();
-        if (width > 200 || height > 200) {
-            if (width > height) {
-                float decreaseSizeBy = (200.0f / width);
-                return getBitmapResized(image, decreaseSizeBy);
-            } else {
-                float decreaseSizeBy = (200.0f / height);
-                return getBitmapResized(image, decreaseSizeBy);
-            }
-        }
-        return image;
+    public static Bitmap resizeTheImageForPrinting(Bitmap bitmap) {
+        float aspectRatio = bitmap.getWidth() / (float) bitmap.getHeight();
+        int newHeight = Math.round(bitmap.getWidth() / aspectRatio);
+        bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), newHeight, false);
+
+        return bitmap;
     }
 
     public static int getRGB(Bitmap bmpOriginal, int col, int row) {

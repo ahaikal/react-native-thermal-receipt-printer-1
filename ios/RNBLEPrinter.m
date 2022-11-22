@@ -10,6 +10,7 @@
 
 #import "RNBLEPrinter.h"
 #import "PrinterSDK.h"
+#import <UIKit/UIKit.h>
 
 @implementation RNBLEPrinter
 
@@ -116,31 +117,31 @@ RCT_EXPORT_METHOD(printRawData:(NSString *)text
     }
 }
 
-RCT_EXPORT_METHOD(printImageData:(NSString *)imgUrl
+RCT_EXPORT_METHOD(printImageData:(NSString *)base64
                   printerOptions:(NSDictionary *)options
                   fail:(RCTResponseSenderBlock)errorCallback) {
     @try {
-        NSLog(@"printImageData");
-       !m_printer ? [NSException raise:@"Invalid connection" format:@"printRawData: Can't connect to printer"] : nil;
-        NSURL* url = [NSURL URLWithString:imgUrl];
-        NSData* imageData = [NSData dataWithContentsOfURL:url];
-        
-        NSString* printerWidthType = [options valueForKey:@"printerWidthType"];
-        
-        NSInteger printerWidth = 576;
-        
-        if(printerWidthType != nil && [printerWidthType isEqualToString:@"58"]) {
-            printerWidth = 384;
+
+       !m_printer ? [NSException raise:@"Invalid connection" format:@"printImageData: Can't connect to printer"] : nil;
+        if(![base64  isEqual: @""]){
+            NSString *result = [@"data:image/png;base64," stringByAppendingString:base64];
+            NSURL *url = [NSURL URLWithString:result];
+            NSData *imageData = [NSData dataWithContentsOfURL:url];
+            NSString* printerWidthType = [options valueForKey:@"printerWidthType"];
+            NSInteger printerWidth = 576;
+
+            if(printerWidthType != nil && [printerWidthType isEqualToString:@"58"]) {
+                printerWidth = 384;
+            }
+
+            if(imageData != nil){
+                UIImage* image = [UIImage imageWithData:imageData];
+                UIImage* printImage = [self getPrintImage:image printerOptions:options];
+
+                [[PrinterSDK defaultPrinterSDK] setPrintWidth:printerWidth];
+                [[PrinterSDK defaultPrinterSDK] printImage:printImage ];
+            }
         }
-        
-        if(imageData != nil){
-            UIImage* image = [UIImage imageWithData:imageData];
-            UIImage* printImage = [self getPrintImage:image printerOptions:options];
-            
-            [[PrinterSDK defaultPrinterSDK] setPrintWidth:printerWidth];
-            [[PrinterSDK defaultPrinterSDK] printImage:printImage ];
-        }
-        
     } @catch (NSException *exception) {
         errorCallback(@[exception.reason]);
     }
@@ -192,7 +193,7 @@ RCT_EXPORT_METHOD(printImageData:(NSString *)imgUrl
     CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
     CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
     CGContextFillRect(context, CGRectMake(0, 0, width, height));
-    CGFloat originX = (width - image.size.width)/2;
+    CGFloat originX = 0;
     CGFloat originY = (height -  image.size.height)/2;
     CGImageRef immageRef = image.CGImage;
     CGContextDrawImage(context, CGRectMake(originX, originY, image.size.width, image.size.height), immageRef);
