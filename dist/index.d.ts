@@ -24,10 +24,10 @@ export declare const USBPrinter: {
     getDeviceList: () => Promise<IUSBPrinter[]>;
     connectPrinter: (vendorId: string, productId: string) => Promise<IUSBPrinter>;
     closeConn: () => Promise<void>;
-    printText: (text: string, opts?: PrinterOptions) => void;
-    printRawData: (text: string, opts?: PrinterOptions) => void;
+    printText: (text: string, opts?: PrinterOptions) => Promise<IUSBPrinter>;
+    printRawData: (text: string, opts?: PrinterOptions) => Promise<IUSBPrinter>;
     printBill: (text: string, opts?: PrinterOptions) => void;
-    printImage: (imgUrl: string, opts?: {}) => void;
+    printImage: (imgUrl: string, opts?: {}) => Promise<IUSBPrinter>;
     printQrCode: (qrCode: string, opts?: {}) => void;
 };
 export declare const BLEPrinter: {
@@ -35,10 +35,10 @@ export declare const BLEPrinter: {
     getDeviceList: () => Promise<IBLEPrinter[]>;
     connectPrinter: (inner_mac_address: string) => Promise<IBLEPrinter>;
     closeConn: () => Promise<void>;
-    printText: (text: string, opts?: PrinterOptions) => void;
-    printRawData: (text: string, opts?: PrinterOptions) => void;
+    printText: (text: string, opts?: PrinterOptions) => Promise<IBLEPrinter>;
+    printRawData: (text: string, opts?: PrinterOptions) => Promise<IBLEPrinter>;
     printBill: (text: string, opts?: PrinterOptions) => void;
-    printImage: (imgUrl: string, opts?: {}) => void;
+    printImage: (imgUrl: string, opts?: {}) => Promise<IBLEPrinter>;
     printQrCode: (qrCode: string, opts?: {}) => void;
 };
 export declare const NetPrinter: {

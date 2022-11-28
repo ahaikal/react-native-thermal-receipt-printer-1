@@ -136,12 +136,14 @@ export var BLEPrinter = {
     printText: function (text, opts) {
         if (opts === void 0) { opts = {}; }
         if (Platform.OS === "ios") {
-            var processedText = textPreprocessingIOS(text, false);
-            RNBLEPrinter.printRawData(processedText.text, processedText.opts, function (error) { return console.warn(error); });
+            var processedText = textPreprocessingIOS(text, opts);
+            return new Promise(function (resolve, reject) {
+                return RNBLEPrinter.printRawData(processedText.text, processedText.opts, function (res) { return resolve(res); }, function (error) { return reject(error); });
+            });
         }
         else {
-            RNBLEPrinter.printRawData(textTo64Buffer(text, opts), function (error) {
-                return console.warn(error);
+            return new Promise(function (resolve, reject) {
+                return RNBLEPrinter.printRawData(textTo64Buffer(text, opts), function (res) { return resolve(res); }, function (error) { return reject(error); });
             });
         }
     },
@@ -160,12 +162,13 @@ export var BLEPrinter = {
     printImage: function (imgUrl, opts) {
         if (opts === void 0) { opts = {}; }
         if (Platform.OS === "ios") {
-            console.log("printImage is not supported on iOS");
-            RNBLEPrinter.printImageData(imgUrl, opts, function (error) { return console.warn(error); });
+            return new Promise(function (resolve, reject) {
+                return RNBLEPrinter.printImageData(imgUrl, opts, function (res) { return resolve(res); }, function (error) { return reject(error); });
+            });
         }
         else {
-            RNBLEPrinter.printImageData(imgUrl, function (error) {
-                return console.warn(error);
+            return new Promise(function (resolve, reject) {
+                return RNBLEPrinter.printImageData(imgUrl, function (res) { return resolve(res); }, function (error) { return reject(error); });
             });
         }
     },
@@ -213,8 +216,8 @@ export var NetPrinter = {
             });
         }
         else {
-            RNNetPrinter.printRawData(textTo64Buffer(text, opts), function (error) {
-                return console.warn(error);
+            return new Promise(function (resolve, reject) {
+                return RNNetPrinter.printRawData(textTo64Buffer(text, opts), function (res) { return resolve(res); }, function (error) { return reject(error); });
             });
         }
     },
@@ -226,8 +229,8 @@ export var NetPrinter = {
             });
         }
         else {
-            RNNetPrinter.printRawData(text, function (error) {
-                return console.warn(error);
+            return new Promise(function (resolve, reject) {
+                return RNNetPrinter.printRawData(text, function (res) { return resolve(res); }, function (error) { return reject(error); });
             });
         }
     },
@@ -251,8 +254,8 @@ export var NetPrinter = {
             });
         }
         else {
-            RNNetPrinter.printImageData(imgUrl, function (error) {
-                return console.warn(error);
+            return new Promise(function (resolve, reject) {
+                return RNNetPrinter.printImageData(imgUrl, function (res) { return resolve(res); }, function (error) { return reject(error); });
             });
         }
     },

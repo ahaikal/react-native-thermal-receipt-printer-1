@@ -88,6 +88,7 @@ RCT_EXPORT_METHOD(connectPrinter:(NSString *)inner_mac_address
 
 RCT_EXPORT_METHOD(printRawData:(NSString *)text
                   printerOptions:(NSDictionary *)options
+                  success:(RCTResponseSenderBlock)successCallback
                   fail:(RCTResponseSenderBlock)errorCallback) {
     @try {
           NSLog(@"printImageData");
@@ -111,7 +112,7 @@ RCT_EXPORT_METHOD(printRawData:(NSString *)text
         
         beep ? [[PrinterSDK defaultPrinterSDK] beep] : nil;
         cut ? [[PrinterSDK defaultPrinterSDK] cutPaper] : nil;
-        
+        successCallback(@[[NSString stringWithFormat:@"success"]]);
     } @catch (NSException *exception) {
         errorCallback(@[exception.reason]);
     }
@@ -119,6 +120,7 @@ RCT_EXPORT_METHOD(printRawData:(NSString *)text
 
 RCT_EXPORT_METHOD(printImageData:(NSString *)base64
                   printerOptions:(NSDictionary *)options
+                  success:(RCTResponseSenderBlock)successCallback
                   fail:(RCTResponseSenderBlock)errorCallback) {
     @try {
 
@@ -141,6 +143,7 @@ RCT_EXPORT_METHOD(printImageData:(NSString *)base64
                 [[PrinterSDK defaultPrinterSDK] setPrintWidth:printerWidth];
                 [[PrinterSDK defaultPrinterSDK] printImage:printImage ];
             }
+            successCallback(@[[NSString stringWithFormat:@"success"]]);
         }
     } @catch (NSException *exception) {
         errorCallback(@[exception.reason]);

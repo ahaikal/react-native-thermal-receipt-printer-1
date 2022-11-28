@@ -226,7 +226,7 @@ public class USBPrinterAdapter implements PrinterAdapter {
     }
 
 
-    public void printRawData(String data, Callback errorCallback) {
+    public void printRawData(String data, Callback successCallback, Callback errorCallback) {
         final String rawData = data;
         Log.v(LOG_TAG, "start to print raw data " + data);
         boolean isConnected = openConnection();
@@ -240,6 +240,7 @@ public class USBPrinterAdapter implements PrinterAdapter {
                     Log.i(LOG_TAG, "Return Status: b-->" + b);
                 }
             }).start();
+            successCallback.invoke("success");
         } else {
             String msg = "failed to connected to device";
             Log.v(LOG_TAG, msg);
@@ -268,7 +269,7 @@ public class USBPrinterAdapter implements PrinterAdapter {
 
 
     @Override
-    public void printImageData(final String imageUrl, Callback errorCallback) {
+    public void printImageData(final String imageUrl, Callback successCallback, Callback errorCallback) {
         final Bitmap bitmapImage = getBitmapFromURL(imageUrl);
 
         if(bitmapImage == null) {
@@ -309,6 +310,7 @@ public class USBPrinterAdapter implements PrinterAdapter {
 
             mUsbDeviceConnection.bulkTransfer(mEndPoint, SET_LINE_SPACE_32, SET_LINE_SPACE_32.length, 100000);
             mUsbDeviceConnection.bulkTransfer(mEndPoint, LINE_FEED, LINE_FEED.length, 100000);
+            successCallback.invoke("success");
         } else {
             String msg = "failed to connected to device";
             Log.v(LOG_TAG, msg);

@@ -224,7 +224,7 @@ public class NetPrinterAdapter implements PrinterAdapter {
     }
 
     @Override
-    public void printRawData(String rawBase64Data, Callback errorCallback) {
+    public void printRawData(String rawBase64Data, Callback successCallback, Callback errorCallback) {
         if (this.mSocket == null) {
             errorCallback.invoke("bluetooth connection is not built, may be you forgot to connectPrinter");
             return;
@@ -246,6 +246,7 @@ public class NetPrinterAdapter implements PrinterAdapter {
                 }
             }
         }).start();
+        successCallback.invoke("success");
 
     }
 
@@ -275,7 +276,7 @@ public class NetPrinterAdapter implements PrinterAdapter {
     }
 
     @Override
-    public void printImageData(final String base64, Callback errorCallback) {
+    public void printImageData(final String base64, Callback successCallback, Callback errorCallback) {
 
         byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
         Bitmap bitmapImage = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
@@ -319,8 +320,8 @@ public class NetPrinterAdapter implements PrinterAdapter {
             }
             printerOutputStream.write(SET_LINE_SPACE_32);
             printerOutputStream.write(LINE_FEED);
-
             printerOutputStream.flush();
+            successCallback.invoke("success");
         } catch (IOException e) {
             Log.e(LOG_TAG, "failed to print data");
             e.printStackTrace();
