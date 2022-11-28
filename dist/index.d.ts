@@ -46,10 +46,10 @@ export declare const NetPrinter: {
     getDeviceList: () => Promise<INetPrinter[]>;
     connectPrinter: (host: string, port: string) => Promise<INetPrinter>;
     closeConn: () => Promise<void>;
-    printText: (text: string, opts?: {}) => void;
-    printRawData: (text: string, opts?: PrinterOptions) => void;
+    printText: (text: string, opts?: {}) => Promise<INetPrinter>;
+    printRawData: (text: string, opts?: PrinterOptions) => Promise<INetPrinter>;
     printBill: (text: string, opts?: {}) => void;
-    printImage: (imgUrl: string, opts?: {}) => void;
+    printImage: (imgUrl: string, opts?: {}) => Promise<INetPrinter>;
     printQrCode: (qrCode: string, opts?: {}) => void;
 };
 export declare const NetPrinterEventEmitter: NativeEventEmitter;

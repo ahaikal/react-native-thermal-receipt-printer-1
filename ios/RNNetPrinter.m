@@ -151,6 +151,7 @@ RCT_EXPORT_METHOD(connectPrinter:(NSString *)host
 
 RCT_EXPORT_METHOD(printRawData:(NSString *)text
                   printerOptions:(NSDictionary *)options
+                  success:(RCTResponseSenderBlock)successCallback
                   fail:(RCTResponseSenderBlock)errorCallback) {
     @try {
         NSNumber* beepPtr = [options valueForKey:@"beep"];
@@ -165,6 +166,7 @@ RCT_EXPORT_METHOD(printRawData:(NSString *)text
         [[PrinterSDK defaultPrinterSDK] printText:text];
         beep ? [[PrinterSDK defaultPrinterSDK] beep] : nil;
         cut ? [[PrinterSDK defaultPrinterSDK] cutPaper] : nil;
+        successCallback(@[[NSString stringWithFormat:@"success"]]);
     } @catch (NSException *exception) {
         errorCallback(@[exception.reason]);
     }
@@ -172,6 +174,7 @@ RCT_EXPORT_METHOD(printRawData:(NSString *)text
 
 RCT_EXPORT_METHOD(printImageData:(NSString *)base64
                   printerOptions:(NSDictionary *)options
+                  success:(RCTResponseSenderBlock)successCallback
                   fail:(RCTResponseSenderBlock)errorCallback) {
     @try {
 
@@ -194,6 +197,7 @@ RCT_EXPORT_METHOD(printImageData:(NSString *)base64
                 [[PrinterSDK defaultPrinterSDK] setPrintWidth:printerWidth];
                 [[PrinterSDK defaultPrinterSDK] printImage:printImage ];
             }
+            successCallback(@[[NSString stringWithFormat:@"success"]]);
         }
     } @catch (NSException *exception) {
         errorCallback(@[exception.reason]);
